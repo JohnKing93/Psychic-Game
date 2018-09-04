@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Hangman</title>
+
+    <link href="assets/css/reset.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="assets/css/style.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <div class="container">
+        </div>
+        <div class="row">
+            <div class="col-lg-3">
+                <img src="assets/images/hangman.gif">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
+                    <div class="card-body">
+                            <h5 class="card-title">Directions</h5>
+                            <p class="card-text">
+                                <ul>
+                                    <li>Press a key to guess if it's in the word.</li>
+                                    <li>Each time you make a guess it will subtract from your remaining guesses, and you can't guess a letter twice.</li>
+                                    <li>If you guess all of the letters before you run out of guesses then you win!</li>
+                                    <li>If you run out of guesses before completing the word then you loose!</li>
+                                </ul>
+                            </p>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Game Scores</h5>
+                        <p class="card-text">
+                            <ul>
+                                <li id="wins-counter"></li>
+                                <li id="losses-counter"></li>
+                            </ul>
+                        </p>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Round Information</h5>
+                        <p class="card-text">
+                            <ul>
+                                <li id="remaining-guesses"></li>
+                                <li id="guessed-letters"></li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="jumbotron">
+                    <h1 id="current-guess" class="display-4"></h1>
+                    <p class="lead">This could be a hint.</p>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+
+    // Instanciate wins counter variable = 0.
+    var winsCounter = 0;
+
+    // Instanciate losses counter variable = 0.
+    var lossesCounter = 0;
+
+    // Instanciate remaining guesses variable.
+    var remainingGuesses;
+
+    // Instanciate selected word variable.
+    var selectedWord;
+
+    // Instanciate current guess variable.
+    var currentGuess = "Cat Breeds";
+ 
+    // Instanciate guesses letters variable.
+    var guessedLetters = "";
+
+    // Instanciate array with words to guess.
+    var catsGame = {
+        breeds: ["russian", "persian", "siamese"],
+    
+    // New Game Function
+        newGame: function() {
+    
+    // Randomly select word from words to guess array and add it to the selected word variable.
+            selectedWord = this.breeds[Math.floor(Math.random()*this.breeds.length)];
+            console.log("selectedWord" + selectedWord);
+    // Count it's length, and insert an underscore for each letter into current word variable.
+            currentGuess = "_".repeat(selectedWord.length);
+
+    // Instert the current word variable into the DOM.
+            var currentGuessId = document.getElementById("current-guess");
+            currentGuessId.textContent = currentGuess;
+
+    // Set the remaining guesses variable to twice the length of the selected word.
+            remainingGuesses = 2 * selectedWord.length;
+
+    // Insert the remaining guesses variable into othe DOM.
+            var remainingGuessesId = document.getElementById("remaining-guesses");
+            remainingGuessesId.textContent = "Remaining Guesses: " + remainingGuesses;
+
+    // Insert the wins variable into the DOM.
+            var winsCounterId = document.getElementById("wins-counter");
+            winsCounterId.textContent = "Wins: " + winsCounter;
+
+    // Insert the losses variable into the DOM.
+            var lossesCounterId = document.getElementById("losses-counter");
+            lossesCounterId.textContent = "Losses: " + lossesCounter;
+
+    // Insert the guessed letters variable into the DOM.
+            var guessedLettersId = document.getElementById("guessed-letters");
+            guessedLettersId.textContent = "Guessed Letters: ";
+
+        }
+    };
+
+    // Call new game function once.
+    catsGame.newGame();
+
+    // Listen for keys.
+    document.onkeyup = function(event) {
+
+    // Capture the key press, convert it to lowercase, and save it to a variable.
+        var letter = event.key.toLowerCase();
+        
+    // Prevent duplicate guesses.
+        if (guessedLetters.indexOf("letter") < 0) {
+    
+    // If the number of guesses remaining is > 0...
+        if (remainingGuesses > 0) {
+
+    // See if it exists in the selected word variable.
+            if (selectedWord.indexOf("letter") >= 0) {
+
+    // If it exist, find each occurrence and position.
+                for (var i = 0; i < selectedWord.length; i++) {
+                    var letterIndex = selectedWord[i].indexOf("letter") >= 0;
+        
+    // Insert the letter into the current guess variable in the position that it belongs.
+                    function replaceAt (currentGuess, letterIndex, letter) {
+                        return currentGuess.substring(0, letterIndex) + letter + currentGuess.substring(letterIndex + 1);
+                    }
+
+                    currentGuess = replaceAt();
+                }
+    
+    // Insert updated current guess variable into the DOM.
+
+                var currentGuessId = document.getElementById("current-guess");
+                currentGuessId.textContent = currentGuess;
+    
+    // Subtract from the remaining guesses variable and update the DOM.
+                remainingGuesses--;
+                var remainingGuessesId = document.getElementById("remaining-guesses");
+                remainingGuessesId.textContent = "Remaining Guesses: " + remainingGuesses;
+    
+    // Add to guessed letter variable and insert it into the DOM.
+                var guessedLettersId = document.getElementById("guessed-letters");
+                var guessedLettersText = document.createTextNode(letter)
+                guessedLettersId.appendChild(guessedLettersText);
+            }
+        }
+        
+    // If it doesn't exist in the selected work variable...      
+        else {
+    
+    // Subtract from the remaining guesses variable and update the DOM.
+            remainingGuesses--;
+            var remainingGuessesId = document.getElementById("remaining-guesses");
+            remainingGuessesId.textContent = "Remaining Guesses: " + remainingGuesses;
+    
+    // Add to guessed letter variable and insert it into the DOM.
+            var guessedLettersId = document.getElementById("guessed-letters");
+            var guessedLettersText = document.createTextNode(letter)
+            guessedLettersId.appendChild(guessedLettersText);
+        }
+
+    // If selected word === current word...
+        if (currentGuess === selectedWord) {
+    
+    // Increment wins counter and insert into the DOM.
+            winsCounter++;
+            var winsCounterId = document.getElementById("wins-counter");
+            winsCounterId.textContent = "Wins: " + winsCounter;
+
+    // Insert image representing word into the DOM.
+    
+    // Insert full text representing word into the DOM with effect.
+    
+    // Call new game function.
+            catsGame.newGame();
+        }
+
+    // If the number of guesses reamining is <= 0... 
+        if (remainingGuesses <= 0) {
+
+    // Increment losses counter and insert into the DOM.
+            lossesCounter++;
+            var lossesCounterId = document.getElementById("losses-counter");
+            lossesCounterId.textContent = "Losses: " + lossesCounter;
+    
+    // Call new game function.
+            catsGame.newGame();
+        }
+       }
+    };
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+  </body>
+
+</html>
